@@ -1,55 +1,83 @@
-'use client'
+
+'use client';
 
 import { useState } from "react";
 
-export default function LoginPage() {
-   
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState(''); 
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../lib/firebase/client";
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) =>{  
-        event.preventDefault();   
-       
-        console.log('Dados do formulario:', {email, password}); 
+export default function LoginPage() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {  
+        event.preventDefault();
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            alert('Login bem-sucedido!');
+           
+
+        } catch (err) {
+            console.error("Erro de autenticação:", err);
+            setError("E-mail ou senha inválidos. Por favor, tente novamente.");
+
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (
-        <main className="flex min-h-screen flex-col items-center justify-center p-24">
-            <div className="w-full max-w-md rounded-lg bg-gray-400 p-8 shadow-md">
-                <h1 className="text-3xl font-bold mb-6 text-center text-gray-900">Nexus Login</h1>
+        <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-black/50">
+            <div className="w-full max-w-md rounded-lg bg-white/90 backdrop-blur-sm p-8 shadow-md text-gray-800">
+                <h1 className="text-3xl font-bold mb-6 text-center">Nexus Login</h1>
+               
                 <form className="space-y-6" onSubmit={handleSubmit}>
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700"> Email </label>
+                        <label htmlFor="email" className="block text-sm font-medium"> Email </label>
                         <input 
                             id="email" 
                             type="email" 
                             required 
-                            className="peer mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-blue-500 text-gray-700" 
-                            placeholder="voce@email.com" 
-                            value={email} 
-                            onChange={(e) => setEmail(e.target.value)} 
+                            className="peer mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-blue-500 disabled:opacity-50" 
+                            placeholder="voce@email.com"
+                            
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            disabled={isLoading}
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700"> Senha </label>
+                        <label htmlFor="password" className="block text-sm font-medium"> Senha </label>
                         <input 
                             id="password" 
                             type="password" 
                             required 
-                            className="peer mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-blue-500 text-gray-700" 
-                            value={password} 
-                            onChange={(e) => setPassword(e.target.value)} 
+                            className="peer mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-blue-500 disabled:opacity-50"
+                     
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            disabled={isLoading}
                         />
                     </div>
 
-                    <div>
+                    {error && (
+                        <p className="text-sm text-red-600 bg-red-100 p-3 rounded-md">{error}</p>
+                    )}
 
+                    <div>
                         <button 
                             type="submit" 
-                            className="flex w-full justify-center mt-6 px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                            className="flex w-full justify-center mt-6 px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400"
+                            disabled={isLoading}
                         >
-                            Entrar
+                            {isLoading ? 'Carregando...' : 'Entrar'}
                         </button>
                     </div>
                 </form>
