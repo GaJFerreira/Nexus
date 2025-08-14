@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from "react";
-
+import Link from "next/link";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../lib/firebase/client";
 
@@ -79,6 +79,13 @@ export default function LoginPage() {
                         >
                             {isLoading ? 'Carregando...' : 'Entrar'}
                         </button>
+                    </div>
+
+                    <div>
+                        <p>Nâo possui cadastro?</p>
+                        <Link href="/register">
+                            <button className="text-blue-600 hover:underline">Registre-se</button>
+                        </Link>
                     </div>
                 </form>
             </div>
