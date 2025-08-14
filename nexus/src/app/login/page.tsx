@@ -5,8 +5,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../lib/firebase/client";
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
+    const router = useRouter();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     
@@ -20,9 +23,8 @@ export default function LoginPage() {
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            alert('Login bem-sucedido!');
-           
-
+            router.push('/menu');
+        
         } catch (err) {
             console.error("Erro de autenticação:", err);
             setError("E-mail ou senha inválidos. Por favor, tente novamente.");
