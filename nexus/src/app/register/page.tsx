@@ -82,6 +82,13 @@ export default function RegisterPage() {
                             {isLoading ? 'Carregando...' : 'Cadastrar'}
                         </button>
                     </div>
+                
+                                        <div>
+                        <p>Já possui cadastro?</p>
+                        <Link href="/login">
+                            <button className="text-blue-600 hover:underline">Fazer login</button>
+                        </Link>
+                    </div>
 
                 </form>
             </div>
