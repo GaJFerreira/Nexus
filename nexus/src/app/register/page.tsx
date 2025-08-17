@@ -3,13 +3,15 @@
 import { use, useState } from "react";
 import Link from "next/link";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../lib/firebase/client";
+import { auth, db } from "../lib/firebase/client";
 import { useRouter } from "next/navigation";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 
 export default function RegisterPage() {
 
     const router = useRouter();
 
+    const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -21,34 +23,60 @@ export default function RegisterPage() {
         setIsLoading(true);
         setError(null);
 
-        try{
-            await createUserWithEmailAndPassword(auth, email, password);
-            router.push(';menu');
-            
-        }catch(err){
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            const userDocRef = doc(db, 'users', user.uid);
+
+            await setDoc(userDocRef, {
+                uid: user.uid,
+                nome: nome,
+                email: email,
+                createdAt: serverTimestamp(),
+            });
+
+            router.push('/menu');
+
+        } catch (err) {
             console.error("Erro de cadastro: ", err);
             setError("Erro ao fazer cadastro. por favor, tente novamente.");
-        }finally{
+        } finally {
             setIsLoading(false);
         }
 
-    } 
+    }
 
     return (
-<main className="flex min-h-screen flex-col items-center justify-center p-24 bg-black/50">
+        <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-black/50">
             <div className="w-full max-w-md rounded-lg bg-white/90 backdrop-blur-sm p-8 shadow-md text-gray-800">
                 <h1 className="text-3xl font-bold mb-6 text-center">Cadastro</h1>
-               
+
                 <form className="space-y-6" onSubmit={handleSubmit}>
+
+                    <div>
+                        <label htmlFor="nome" className="block text-sm font-medium"> Nome </label>
+                        <input
+                            id="nome"
+                            type="name"
+                            required
+                            className="peer mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-blue-500 disabled:opacity-50"
+                            placeholder="Fulano de Tal"
+
+                            value={nome}
+                            onChange={(e) => setNome(e.target.value)}
+                            disabled={isLoading}
+                        />
+                    </div>
+
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium"> Email </label>
-                        <input 
-                            id="email" 
-                            type="email" 
-                            required 
-                            className="peer mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-blue-500 disabled:opacity-50" 
+                        <input
+                            id="email"
+                            type="email"
+                            required
+                            className="peer mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-blue-500 disabled:opacity-50"
                             placeholder="voce@email.com"
-                            
+
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             disabled={isLoading}
@@ -57,10 +85,10 @@ export default function RegisterPage() {
 
                     <div>
                         <label htmlFor="password" className="block text-sm font-medium"> Senha </label>
-                        <input 
-                            id="password" 
-                            type="password" 
-                            required 
+                        <input
+                            id="password"
+                            type="password"
+                            required
                             className="peer mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-blue-500 disabled:opacity-50"
                             placeholder="Minimo de 6 caracteres"
                             value={password}
@@ -74,16 +102,16 @@ export default function RegisterPage() {
                     )}
 
                     <div>
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             className="flex w-full justify-center mt-6 px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400"
                             disabled={isLoading}
                         >
                             {isLoading ? 'Carregando...' : 'Cadastrar'}
                         </button>
                     </div>
-                
-                                        <div>
+
+                    <div>
                         <p>Já possui cadastro?</p>
                         <Link href="/login">
                             <button className="text-blue-600 hover:underline">Fazer login</button>
@@ -94,5 +122,4 @@ export default function RegisterPage() {
             </div>
         </main>
     );
-  }
-  
+}

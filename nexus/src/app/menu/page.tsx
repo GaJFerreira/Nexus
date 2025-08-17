@@ -35,7 +35,14 @@ export default function DashboardPage() {
         </div>
         <div className="basis-3xs bg-white/80 rounded-lg shadow-md p-6 m-1 flex flex-col justify-center items-center ">
           👤 Perfil
-          <button className="w-50 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors" onClick={() => router.push('/user')  }>
+          <button className="w-50 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors" onClick={() => router.push('/user')}>
+            Ir
+          </button>
+        </div>
+
+        <div className="basis-3xs bg-white/80 rounded-lg shadow-md p-6 m-1 flex flex-col justify-center items-center ">
+          Contas
+          <button className="w-50 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors" onClick={() => router.push('/contas')}>
             Ir
           </button>
         </div>
