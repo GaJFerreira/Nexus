@@ -2,16 +2,22 @@
 
 'use client';
 
+import { useCallback, useState } from 'react';
 import { useAuth } from '@/app/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import AddTransactionModal from '../components/modals/AddTransactionModal';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '@/app/lib/firebase/client';
 
+
+interface UserProfile { name: string; email: string; }
+interface Account { id: string; name: string; }
 
 export default function DashboardPage() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading: isAuthLoading } = useAuth();
   const router = useRouter();
 
-  // Se o utilizador estiver logado, mostramos o conteúdo real do dashboard.
   return (
     <main className="min-h-screen bg-black/30 p-6">
 
